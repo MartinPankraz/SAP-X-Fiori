@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: azure/container-actions/docker-login@master
+      with:
+        login-server: sapui5.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        docker push sapui5.azurecr.io/sapxfiori:${{ github.sha }}
