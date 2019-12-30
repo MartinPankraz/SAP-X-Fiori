@@ -1,0 +1,34 @@
+<mvc:View controllerName="azure.sap-x-app.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+	<Shell id="shell">
+		<App id="app">
+			<pages>
+				<Page id="page" title="{i18n>title}">
+					<content>
+						<Table id="idProductsTable"
+					        inset="false"
+					        items="{azure>/}">
+					        <columns>
+					          <Column
+					            width="12em">
+					            <Label text="ID" />
+					          </Column>
+					          <Column
+					            hAlign="Right">
+					            <Label text="Name" />
+					          </Column>
+					        </columns>
+					        <items>
+					          <ColumnListItem>
+					            <cells>
+					              <Text text="{azure>RowKey}" />
+					              <Text text="{azure>name}" />
+					            </cells>
+					          </ColumnListItem>
+					        </items>
+					      </Table>
+					</content>
+				</Page>
+			</pages>
+		</App>
+	</Shell>
+</mvc:View>
