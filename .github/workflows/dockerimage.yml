@@ -19,5 +19,5 @@ jobs:
     
     - name: Build the Docker image
       run: |
-        docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        docker build . --file Dockerfile --tag sapxfiori:$(date +%s)
         docker push sapui5.azurecr.io/sapxfiori:${{ github.sha }}
