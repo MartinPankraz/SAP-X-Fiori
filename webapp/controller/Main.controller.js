@@ -6,7 +6,18 @@ sap.ui.define([
 	return Controller.extend("azure.sap-x-app.controller.Main", {
 		onInit: function () {
 			var that = this;
-			this.oModel = new sap.ui.model.json.JSONModel("/azure/manual/paths/invoke");
+			//check plain URL query string
+			var sRunOnPlatform = jQuery.sap.getUriParameters().get("platform");
+			//check fiori specific setup
+			var oComponentData = this.getOwnerComponent().getComponentData().startupParameters["platform"][0];
+			var targetPlatformLink = "";
+			if(sRunOnPlatform == "scp" || oComponentData == "scp"){
+				targetPlatformLink = "/azure/manual/paths/invoke";
+			}else {
+				//must be Azure then
+				targetPlatformLink = sRunOnPlatform
+			}
+			this.oModel = new sap.ui.model.json.JSONModel(targetPlatformLink);
 			/*this.oModel.attachRequestCompleted(function() {
 		        console.log(that.oModel.getData());
 		    });*/
