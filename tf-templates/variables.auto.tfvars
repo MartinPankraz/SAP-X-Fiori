@@ -1,6 +1,6 @@
 prefix = "sapxproject"
 
-location = "northeurope"
+location = "westeurope"
 
 docker_registry = "sapxproject.azurecr.io"
 
