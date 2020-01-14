@@ -18,7 +18,7 @@ sap.ui.define([
 				targetPlatformLink = "/azure/manual/paths/invoke";
 			}else {
 				//must be Azure then
-				targetPlatformLink = sRunOnPlatform
+				targetPlatformLink = "../manual/paths/invoke";//sRunOnPlatform
 			}
 			this.oModel = new sap.ui.model.json.JSONModel(targetPlatformLink);
 			/*this.oModel.attachRequestCompleted(function() {
