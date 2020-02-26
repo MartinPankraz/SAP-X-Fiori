@@ -1,34 +1,90 @@
 <mvc:View controllerName="azure.sap-x-app.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
 	<Shell id="shell">
 		<App id="app">
-			<pages>
-				<Page id="page" title="{i18n>title}">
-					<content>
-						<Table id="idProductsTable"
-					        inset="false"
-					        items="{azure>/}">
-					        <columns>
-					          <Column
-					            width="12em">
-					            <Label text="ID" />
-					          </Column>
-					          <Column
-					            hAlign="Right">
-					            <Label text="Name" />
-					          </Column>
-					        </columns>
-					        <items>
-					          <ColumnListItem>
-					            <cells>
-					              <Text text="{azure>RowKey}" />
-					              <Text text="{azure>name}" />
-					            </cells>
-					          </ColumnListItem>
-					        </items>
-					      </Table>
-					</content>
-				</Page>
-			</pages>
+			<NavContainer id="parentNavContainer" >
+				<pages>
+					<Page id="page" title="{i18n>title}">
+						<headerContent>
+							<Button icon="sap-icon://synchronize" press=".synch"/>
+						</headerContent>
+						<content>
+							<Table id="idProductsTable"
+						        inset="false"
+						        items="{azure>/value}"
+						        mode="SingleSelectMaster"
+						        itemPress=".myItemPress">
+						        <columns>
+						          <Column
+						            width="12em">
+						            <Label text="ID" />
+						          </Column>
+						          <Column
+						            hAlign="Right">
+						            <Label text="Name" />
+						          </Column>
+						          <Column
+						            width="12em">
+						            <Label text="Sentiment" />
+						          </Column>
+						        </columns>
+						        <items>
+						          <ColumnListItem type="Navigation">
+						            <cells>
+						              <Text text="{azure>RowKey}" />
+						              <Text text="{azure>name}" />
+						              <ObjectStatus state="{
+											path: 'azure>sentiment',
+											formatter: '.statusColor'
+										}" text="{azure>sentiment}" />
+						            </cells>
+						          </ColumnListItem>
+						        </items>
+						      </Table>
+						</content>
+					</Page>
+					<Page id="detail" title="{i18n>titleDetailPage}" showNavButton="true" navButtonPress="navBackPress">
+						<headerContent>
+							<Button icon="sap-icon://synchronize" press=".synch"/>
+						</headerContent>
+						<content>
+							<Table id="idDetailsTable"
+						        inset="false"
+						        items="{detail>/value}"
+						        mode="SingleSelectMaster"
+						        itemPress=".myItemPress">
+						        <columns>
+						          <Column
+						            width="12em">
+						            <Label text="Airline" />
+						          </Column>
+						          <Column>
+						            <Label text="Created At" />
+						          </Column>
+						          <Column>
+						            <Label text="Score" />
+						          </Column>
+						          <Column>
+						            <Label text="Text" />
+						          </Column>
+						        </columns>
+						        <items>
+						          <ColumnListItem type="Inactive">
+						            <cells>
+						              <Text text="{detail>RowKey}" />
+						              <Text text="{detail>createdAt}" />
+						              <ObjectStatus state="{
+											path: 'detail>score',
+											formatter: '.statusColor'
+										}" text="{detail>score}" />
+						            </cells>
+						            <Text text="{detail>text}" />
+						          </ColumnListItem>
+						        </items>
+						      </Table>
+						</content>
+					</Page>
+				</pages>
+			</NavContainer>
 		</App>
 	</Shell>
 </mvc:View>
