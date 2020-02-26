@@ -9,7 +9,10 @@ sap.ui.define([
 			//check plain URL query string
 			var sRunOnPlatform = jQuery.sap.getUriParameters().get("platform");
 			//check fiori specific setup
-			var oComponentData = this.getOwnerComponent().getComponentData().startupParameters["platform"][0];
+			var oComponentData = "";
+			if(this.getOwnerComponent().getComponentData()){
+				oComponentData = this.getOwnerComponent().getComponentData().startupParameters["platform"][0];
+			}
 			var targetPlatformLink = "";
 			if(sRunOnPlatform == "scp" || oComponentData == "scp"){
 				targetPlatformLink = "/azure/manual/paths/invoke";
