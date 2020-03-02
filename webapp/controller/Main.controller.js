@@ -1,6 +1,8 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller"
-], function (Controller) {
+	"sap/ui/core/mvc/Controller",
+	'sap/ui/core/Fragment',
+	'sap/m/MessageToast'
+], function (Controller, Fragment, MessageToast) {
 	"use strict";
 
 	return Controller.extend("azure.sap-x-app.controller.Main", {
@@ -72,6 +74,30 @@ sap.ui.define([
 			oBinding.filter(new sap.ui.model.Filter("RowKey", "EQ", airlineCode ));
 			
 			navCon.to(this.byId("detail"));
+		},
+		
+		onDetailPress:function(oEvent){
+			var oItem = oEvent.getSource();
+
+			// create popover
+			if (!this._oPopover) {
+				Fragment.load({
+					name: "azure.sap-x-app.view.Popover",
+					controller: this
+				}).then(function(pPopover) {
+					this._oPopover = pPopover;
+					this.getView().addDependent(this._oPopover);
+					this._oPopover.bindElement("/ProductCollection/0");
+					this._oPopover.openBy(oItem);
+				}.bind(this));
+			} else {
+				this._oPopover.openBy(oItem);
+			}
+		},
+		
+		handleItemPress:function(oEvent){
+			this._oPopover.close();
+			MessageToast.show("Task in Dyn365 has been created!");
 		},
 		
 		navBackPress:function(oEvent){

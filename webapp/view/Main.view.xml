@@ -68,7 +68,7 @@
 						          </Column>
 						        </columns>
 						        <items>
-						          <ColumnListItem type="Inactive">
+						          <ColumnListItem type="Detail" detailPress="onDetailPress">
 						            <cells>
 						              <Text text="{detail>RowKey}" />
 						              <Text text="{detail>createdAt}" />
