@@ -15,12 +15,15 @@ sap.ui.define([
 			if(this.getOwnerComponent().getComponentData()){
 				oComponentData = this.getOwnerComponent().getComponentData().startupParameters["platform"][0];
 			}
-			var targetPlatformLink = "";
+			this.targetPlatformLink = "";
+			this.targetPlatformTaskLink = "";
 			if(sRunOnPlatform == "scp" || oComponentData == "scp"){
-				targetPlatformLink = "/azure/manual/paths/invoke";
+				this.targetPlatformLink = "/azure/manual/paths/invoke";
+				this.targetPlatformTaskLink = "/azure/task";
 			}else {
 				//must be Azure then
-				targetPlatformLink = sRunOnPlatform;
+				this.targetPlatformLink = sRunOnPlatform + "/manual/paths/invoke";
+				this.targetPlatformTaskLink = sRunOnPlatform + "/task";
 			}
 			
 			/*this.oModel.attachRequestCompleted(function() {
@@ -29,7 +32,7 @@ sap.ui.define([
 			that.oModel = new sap.ui.model.json.JSONModel();
     		that.oModelDetail = new sap.ui.model.json.JSONModel();
     		
-			this.synch(targetPlatformLink);
+			this.synch();
 			
     		that.getView().setModel(that.oModel,"azure");
     		that.getView().setModel(that.oModelDetail,"detail");
@@ -41,11 +44,11 @@ sap.ui.define([
 			}
 		},
 		
-		synch: function(url){
+		synch: function(){
 			var that = this;
 			$.ajax({
 				type : 'GET',
-				url: url,
+				url: that.targetPlatformLink,
 		        success: function(data){
 		            var sapTable = data[0];
 		            var sentimentTable = data[1];
@@ -102,13 +105,12 @@ sap.ui.define([
 		},
 		
 		createTaskinDyn365: function(payload){
-			var url = "/azure/task";
 			var that = this;
 			//retrieve user input to send to dynamics
 			payload.title = this._oPopover.getContent()[0].getValue();
 			$.ajax({
 				type : 'POST',
-				url: url,
+				url: that.targetPlatformTaskLink,
 				data: JSON.stringify(payload),
 				contentType: "application/json",
 		        success: function(data){
