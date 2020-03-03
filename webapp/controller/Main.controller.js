@@ -29,7 +29,7 @@ sap.ui.define([
 			that.oModel = new sap.ui.model.json.JSONModel();
     		that.oModelDetail = new sap.ui.model.json.JSONModel();
     		
-			this.synch();
+			this.synch(targetPlatformLink);
 			
     		that.getView().setModel(that.oModel,"azure");
     		that.getView().setModel(that.oModelDetail,"detail");
@@ -41,8 +41,7 @@ sap.ui.define([
 			}
 		},
 		
-		synch: function(){
-			var url = "/azure/manual/paths/invoke";
+		synch: function(url){
 			var that = this;
 			$.ajax({
 				type : 'GET',
