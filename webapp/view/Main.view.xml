@@ -55,16 +55,16 @@
 						        <columns>
 						          <Column
 						            width="12em">
-						            <Label text="Airline" />
+						            <Label text="{i18n>AirlineTitle}" />
 						          </Column>
 						          <Column>
-						            <Label text="Created At" />
+						            <Label text="{i18n>CreatedAt}" />
 						          </Column>
 						          <Column>
-						            <Label text="Score" />
+						            <Label text="{i18n>Score}" />
 						          </Column>
 						          <Column>
-						            <Label text="Text" />
+						            <Label text="{i18n>TwitterText}" />
 						          </Column>
 						        </columns>
 						        <items>

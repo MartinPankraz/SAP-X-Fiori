@@ -35,6 +35,12 @@ sap.ui.define([
     		that.getView().setModel(that.oModelDetail,"detail");
 		},
 		
+		onExit : function () {
+			if (this._oPopover) {
+				this._oPopover.destroy();
+			}
+		},
+		
 		synch: function(){
 			var url = "/azure/manual/paths/invoke";
 			var that = this;
@@ -78,7 +84,9 @@ sap.ui.define([
 		
 		onDetailPress:function(oEvent){
 			var oItem = oEvent.getSource();
-
+			var oContext = oItem.getBindingContext("detail");
+			var path = oContext.getPath();
+			this.myObject = oContext.getModel().getProperty(path);
 			// create popover
 			if (!this._oPopover) {
 				Fragment.load({
@@ -87,7 +95,6 @@ sap.ui.define([
 				}).then(function(pPopover) {
 					this._oPopover = pPopover;
 					this.getView().addDependent(this._oPopover);
-					this._oPopover.bindElement("/ProductCollection/0");
 					this._oPopover.openBy(oItem);
 				}.bind(this));
 			} else {
@@ -95,9 +102,33 @@ sap.ui.define([
 			}
 		},
 		
+		createTaskinDyn365: function(payload){
+			var url = "/azure/task";
+			var that = this;
+			//retrieve user input to send to dynamics
+			payload.title = this._oPopover.getContent()[0].getValue();
+			$.ajax({
+				type : 'POST',
+				url: url,
+				data: JSON.stringify(payload),
+				contentType: "application/json",
+		        success: function(data){
+		        	MessageToast.show("Task in Dyn365 has been created!");
+		        },
+		        error: function(data){
+		        	MessageToast.show("Could not create task in Dyn365.");
+		        }
+			});
+		},
+		
 		handleItemPress:function(oEvent){
 			this._oPopover.close();
-			MessageToast.show("Task in Dyn365 has been created!");
+			
+			this.createTaskinDyn365(this.myObject);
+		},
+		
+		handleCancelPress: function(oEvent){
+			this._oPopover.close();
 		},
 		
 		navBackPress:function(oEvent){
