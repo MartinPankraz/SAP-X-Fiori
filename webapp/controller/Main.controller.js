@@ -111,12 +111,17 @@ sap.ui.define([
 			$.ajax({
 				type : 'POST',
 				url: that.targetPlatformTaskLink,
-				data: JSON.stringify(payload),
+				dataType: 'json',
+				data: payload,
 		        success: function(data){
 		        	MessageToast.show("Task in Dyn365 has been created!");
 		        },
 		        error: function(data){
-		        	MessageToast.show("Could not create task in Dyn365.");
+		        	if(data.status == "202"){
+		        		MessageToast.show("Task in Dyn365 has been created!");	
+		        	}else{
+		        		MessageToast.show("Could not create task in Dyn365.");	
+		        	}
 		        }
 			});
 		},
