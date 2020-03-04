@@ -5,6 +5,8 @@ Visualization of Flight Sample data from public SAP ERP ES5 enriched with Sentim
 
 ![reference architecture](https://github.com/MartinPankraz/SAP-X-Fiori/blob/master/img/cognitive-SAP.png)
 
+Find more details on my blog post: https://blogs.sap.com/2020/03/04/your-sap-data-becomes-sentimental/
+
 ARM templates will follow soon.
 
 Feel free to reach out: martin.pankraz@microsoft.com
