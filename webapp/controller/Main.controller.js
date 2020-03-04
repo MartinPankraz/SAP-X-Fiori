@@ -22,8 +22,8 @@ sap.ui.define([
 				this.targetPlatformTaskLink = "/azure/task";
 			}else {
 				//must be Azure then
-				this.targetPlatformLink = sRunOnPlatform + "/manual/paths/invoke";
-				this.targetPlatformTaskLink = sRunOnPlatform + "/task";
+				this.targetPlatformLink = sRunOnPlatform + "manual/paths/invoke";
+				this.targetPlatformTaskLink = sRunOnPlatform + "task";
 			}
 			
 			/*this.oModel.attachRequestCompleted(function() {
@@ -112,7 +112,6 @@ sap.ui.define([
 				type : 'POST',
 				url: that.targetPlatformTaskLink,
 				data: JSON.stringify(payload),
-				contentType: "application/json",
 		        success: function(data){
 		        	MessageToast.show("Task in Dyn365 has been created!");
 		        },
