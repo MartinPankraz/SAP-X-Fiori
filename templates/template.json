@@ -1,0 +1,3128 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apis_getdatastorageaccount_path": {
+            "type": "SecureString"
+        },
+        "subscriptions_5e01fdadc2dc55009a070001_displayName": {
+            "type": "SecureString"
+        },
+        "subscriptions_5e01fdadc2dc55009a070002_displayName": {
+            "type": "SecureString"
+        },
+        "users_1_lastName": {
+            "type": "SecureString"
+        },
+        "sites_sapxapp_name": {
+            "defaultValue": "sapxapp",
+            "type": "String"
+        },
+        "connections_teams_name": {
+            "defaultValue": "teams",
+            "type": "String"
+        },
+        "connections_keyvault_name": {
+            "defaultValue": "keyvault",
+            "type": "String"
+        },
+        "connections_twitter_3_name": {
+            "defaultValue": "twitter-3",
+            "type": "String"
+        },
+        "workflows_GetDataES5_name": {
+            "defaultValue": "GetDataES5",
+            "type": "String"
+        },
+        "connections_azuretables_1_name": {
+            "defaultValue": "azuretables-1",
+            "type": "String"
+        },
+        "vaults_project_secrets_name": {
+            "defaultValue": "project-secrets",
+            "type": "String"
+        },
+        "service_auth_proxy_name": {
+            "defaultValue": "auth-proxy",
+            "type": "String"
+        },
+        "workflows_CreateDyn365Task_name": {
+            "defaultValue": "CreateDyn365Task",
+            "type": "String"
+        },
+        "workflows_TwitterSentiment_name": {
+            "defaultValue": "TwitterSentiment",
+            "type": "String"
+        },
+        "storageAccounts_sapstoresa_name": {
+            "defaultValue": "sapstoresa",
+            "type": "String"
+        },
+        "connections_commondataservice_1_name": {
+            "defaultValue": "commondataservice-1",
+            "type": "String"
+        },
+        "connections_dynamicscrmonline_1_name": {
+            "defaultValue": "dynamicscrmonline-1",
+            "type": "String"
+        },
+        "accounts_Flight_CS_name": {
+            "defaultValue": "Flight-CS",
+            "type": "String"
+        },
+        "registries_sapxacr_name": {
+            "defaultValue": "sapxacr",
+            "type": "String"
+        },
+        "serverfarms_ASP_sapprojectx_89f8_name": {
+            "defaultValue": "ASP-sapprojectx-89f8",
+            "type": "String"
+        },
+        "workflows_GetDataStorageAccount_name": {
+            "defaultValue": "GetDataStorageAccount",
+            "type": "String"
+        },
+        "connections_cognitiveservicestextanalytics_1_name": {
+            "defaultValue": "cognitiveservicestextanalytics-1",
+            "type": "String"
+        },
+        "connections_azuretables_externalid": {
+            "defaultValue": "/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Web/connections/azuretables",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2019-01-01",
+            "name": "[parameters('service_auth_proxy_name')]",
+            "location": "West Europe",
+            "sku": {
+                "name": "Developer",
+                "capacity": 1
+            },
+            "properties": {
+                "publisherEmail": "mapankra@microsoft.com",
+                "publisherName": "sap-project-x",
+                "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
+                "hostnameConfigurations": [
+                    {
+                        "type": "Proxy",
+                        "hostName": "[concat(parameters('service_auth_proxy_name'), '.azure-api.net')]",
+                        "negotiateClientCertificate": false,
+                        "defaultSslBinding": true
+                    }
+                ],
+                "customProperties": {
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+                },
+                "virtualNetworkType": "None"
+            }
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[parameters('accounts_Flight_CS_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "TextAnalytics",
+            "properties": {
+                "customSubDomainName": "flight-cs"
+            }
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2019-12-01-preview",
+            "name": "[parameters('registries_sapxacr_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+            },
+            "properties": {
+                "adminUserEnabled": true,
+                "policies": {
+                    "quarantinePolicy": {
+                        "status": "disabled"
+                    },
+                    "trustPolicy": {
+                        "type": "Notary",
+                        "status": "disabled"
+                    },
+                    "retentionPolicy": {
+                        "days": 7,
+                        "status": "disabled"
+                    }
+                },
+                "encryption": {
+                    "status": "disabled"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('vaults_project_secrets_name')]",
+            "location": "westeurope",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "<<<Your AAD tenant Id>>>",
+                "accessPolicies": [
+                    {
+                        "tenantId": "<<<Your AAD tenant Id>>>",
+                        "objectId": "d8ee58b4-901d-426e-8529-79fb13575fe0",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "Decrypt",
+                                "Encrypt",
+                                "UnwrapKey",
+                                "WrapKey",
+                                "Verify",
+                                "Sign",
+                                "Purge"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "Purge"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers",
+                                "Purge"
+                            ]
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccounts_sapstoresa_name')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "largeFileSharesState": "Disabled",
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_azuretables_1_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "azuretables",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/azuretables"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_cognitiveservicestextanalytics_1_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "cognitiveservicestextanalytics",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/cognitiveservicestextanalytics"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_commondataservice_1_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "admin@CRM039456.onmicrosoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/commondataservice"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_dynamicscrmonline_1_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "admin@CRM039456.onmicrosoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/dynamicscrmonline"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_keyvault_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "mapankra@microsoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/', parameters('connections_keyvault_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_teams_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "mapankra@microsoft.com",
+                "customParameterValues": {},
+                "api": {
+                    "id": "[concat('/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/', parameters('connections_teams_name'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/connections",
+            "apiVersion": "2016-06-01",
+            "name": "[parameters('connections_twitter_3_name')]",
+            "location": "westeurope",
+            "properties": {
+                "displayName": "sapxproject1",
+                "customParameterValues": {},
+                "api": {
+                    "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/twitter"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('serverfarms_ASP_sapprojectx_89f8_name')]",
+            "location": "West Europe",
+            "sku": {
+                "name": "P1v2",
+                "tier": "PremiumV2",
+                "size": "P1v2",
+                "family": "Pv2",
+                "capacity": 1
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "maximumElasticWorkerCount": 1,
+                "isSpot": false,
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Echo API",
+                "apiRevision": "1",
+                "subscriptionRequired": true,
+                "serviceUrl": "http://echoapi.cloudapp.net/api",
+                "path": "echo",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "GetDataStorageAccount",
+                "apiRevision": "1",
+                "description": "Azure Logic App.",
+                "subscriptionRequired": false,
+                "serviceUrl": "https://<<<Your locig app location>>>.logic.azure.com/workflows/77fd5555545d46418a950e25e6fb4b2e/triggers",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true,
+                "path": "[parameters('apis_getdatastorageaccount_path')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Smart Flight API",
+                "apiRevision": "1",
+                "description": "Azure Logic App.",
+                "subscriptionRequired": false,
+                "serviceUrl": "https://<<<Your locig app location>>>.logic.azure.com/workflows/77fd5555545d46418a950e25e6fb4b2e/triggers",
+                "path": "secure",
+                "protocols": [
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/authorizationServers",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/myproxyoauth')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "MyProxyOAuth",
+                "description": "OAuth support for internal logic apps",
+                "clientRegistrationEndpoint": "http://localhost",
+                "authorizationEndpoint": "https://login.microsoftonline.com/<<<Your AAD tenant Id>>>/oauth2/v2.0/authorize",
+                "authorizationMethods": [
+                    "GET",
+                    "POST"
+                ],
+                "clientAuthenticationMethod": [
+                    "Body"
+                ],
+                "tokenBodyParameters": [],
+                "tokenEndpoint": "https://login.microsoftonline.com/<<<Your AAD tenant Id>>>/oauth2/v2.0/token",
+                "supportState": false,
+                "defaultScope": "api://94106464-0eac-45b5-ba44-f72e7345f645/API.CALL",
+                "grantTypes": [
+                    "authorizationCode",
+                    "implicit"
+                ],
+                "bearerTokenSendingMethods": [
+                    "authorizationHeader"
+                ],
+                "clientId": "<<<id>>>",
+                "clientSecret": "<<<secret>>>"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/ApiApp_sapxapp')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "description": "sapxapp",
+                "url": "https://sapxapp-dev.azurewebsites.net",
+                "protocol": "http",
+                "resourceId": "https://management.azure.com/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Web/sites/sapxapp/slots/dev"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/LogicApp_CreateDyn365Task_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "description": "CreateDyn365Task",
+                "url": "https://prod-60.westeurope.logic.azure.com/workflows/cf20154a3c084f2b81e10ca4ea59e269/triggers",
+                "protocol": "http",
+                "resourceId": "https://management.azure.com/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Logic/workflows/CreateDyn365Task"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/LogicApp_GetData_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "description": "GetData",
+                "url": "https://prod-63.westeurope.logic.azure.com/workflows/3dc8b6a6ceb3421b9c6649c022ef0004/triggers",
+                "protocol": "http",
+                "resourceId": "https://management.azure.com/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Logic/workflows/GetData"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/LogicApp_GetDataStorageAccount_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "description": "GetDataStorageAccount",
+                "url": "https://<<<Your locig app location>>>.logic.azure.com/workflows/77fd5555545d46418a950e25e6fb4b2e/triggers",
+                "protocol": "http",
+                "resourceId": "https://management.azure.com/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Logic/workflows/GetDataStorageAccount"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/backends",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/LogicApp_ReadDataTs_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "description": "ReadDataTs",
+                "url": "https://prod-00-logicappinjecti-s4cm7hxfbposg-internal.westeurope.environments.microsoftazurelogicapps.net/workflows/856a25c90a57408aad07dbbd33be9f65/triggers",
+                "protocol": "http",
+                "resourceId": "https://management.azure.com/subscriptions/<<<Your Subscription Id>>>/resourceGroups/sap-project-x/providers/Microsoft.Logic/workflows/ReadDataTs"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/administrators')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Administrators",
+                "description": "Administrators is a built-in group. Its membership is managed by the system. Microsoft Azure subscription administrators fall into this group.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/developers')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Developers",
+                "description": "Developers is a built-in group. Its membership is managed by the system. Signed-in users fall into this group.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/groups",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/guests')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Guests",
+                "description": "Guests is a built-in group. Its membership is managed by the system. Unauthenticated users visiting the developer portal fall into this group.",
+                "type": "system"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - Only the <forward-request> policy element can appear within the <backend> section element.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n-->\r\n<policies>\r\n  <inbound />\r\n  <backend>\r\n    <forward-request />\r\n  </backend>\r\n  <outbound />\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/starter')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Starter",
+                "description": "Subscribers will be able to run 5 calls/minute up to a maximum of 100 calls/week.",
+                "subscriptionRequired": true,
+                "approvalRequired": false,
+                "subscriptionsLimit": 1,
+                "state": "published"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/unlimited')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Unlimited",
+                "description": "Subscribers have completely unlimited access to the API. Administrator approval is required.",
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 1,
+                "state": "published"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e0218b75ca61ffa36ebf0fe')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "getdata_manual-invoke_5e0218b75ca61ffa36ebf0fe",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e02342ad5564986976f55e5')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "readdatats_manual-invoke_5e02342ad5564986976f55e5",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e023c5b2ae07293cbf93f9e')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "readdatats_manual-invoke_5e023c5b2ae07293cbf93f9e",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e062288e0d85d164739d4a6')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "scp-check_manual-invoke_5e062288e0d85d164739d4a6",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e09c3521d85685147375c1f')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "getdatastorageaccount_manual-invoke_5e09c3521d85685147375c1f",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e09c46edb150cd7c1fbab59')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "smart-flight-api_manual-invoke_5e09c46edb150cd7c1fbab59",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e5d4ea88337fc4aa1b32059')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "smart-flight-api_create-task_5e5d4ea88337fc4aa1b32059",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/properties",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e5e622d7d14a19758521abc')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "getdatastorageaccount_create-task_5e5e622d7d14a19758521abc",
+                "value": "<<<secret>>>",
+                "tags": [],
+                "secret": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/subscriptions",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/master')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "scope": "[concat(resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name')), '/')]",
+                "displayName": "Built-in all-access subscription",
+                "state": "active",
+                "allowTracing": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/AccountClosedDeveloper')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Thank you for using the $OrganizationName API!",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          On behalf of $OrganizationName and our customers we thank you for giving us a try. Your $OrganizationName API account is now closed.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Your $OrganizationName Team</p>\r\n    <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n    <p />\r\n  </body>\r\n</html>",
+                "title": "Developer farewell letter",
+                "description": "Developers receive this farewell email after they close their account.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/ApplicationApprovedNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your application $AppName is published in the application gallery",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          We are happy to let you know that your request to publish the $AppName application in the application gallery has been approved. Your application has been published and can be viewed <a href=\"http://$DevPortalUrl/Applications/Details/$AppId\">here</a>.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Best,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n  </body>\r\n</html>",
+                "title": "Application gallery submission approved",
+                "description": "Developers who submitted their application for publication in the application gallery on the developer portal receive this email after their submission is approved.",
+                "parameters": [
+                    {
+                        "name": "AppId",
+                        "title": "Application id"
+                    },
+                    {
+                        "name": "AppName",
+                        "title": "Application name"
+                    },
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/ConfirmSignUpIdentityDefault')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Please confirm your new $OrganizationName API account",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <title>Letter</title>\r\n  </head>\r\n  <body>\r\n    <table width=\"100%\">\r\n      <tr>\r\n        <td>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\"></p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you for joining the $OrganizationName API program! We host a growing number of cool APIs and strive to provide an awesome experience for API developers.</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">First order of business is to activate your account and get you going. To that end, please click on the following link:</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a id=\"confirmUrl\" href=\"$ConfirmUrl\" style=\"text-decoration:none\">\r\n              <strong>$ConfirmUrl</strong>\r\n            </a>\r\n          </p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">If clicking the link does not work, please copy-and-paste or re-type it into your browser's address bar and hit \"Enter\".</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">$OrganizationName API Team</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n          </p>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </body>\r\n</html>",
+                "title": "New developer account confirmation",
+                "description": "Developers receive this email to confirm their e-mail address after they sign up for a new account.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    },
+                    {
+                        "name": "ConfirmUrl",
+                        "title": "Developer activation URL"
+                    },
+                    {
+                        "name": "DevPortalHost",
+                        "title": "Developer portal hostname"
+                    },
+                    {
+                        "name": "ConfirmQuery",
+                        "title": "Query string part of the activation URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/EmailChangeIdentityDefault')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Please confirm the new email associated with your $OrganizationName API account",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <title>Letter</title>\r\n  </head>\r\n  <body>\r\n    <table width=\"100%\">\r\n      <tr>\r\n        <td>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\"></p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">You are receiving this email because you made a change to the email address on your $OrganizationName API account.</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Please click on the following link to confirm the change:</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a id=\"confirmUrl\" href=\"$ConfirmUrl\" style=\"text-decoration:none\">\r\n              <strong>$ConfirmUrl</strong>\r\n            </a>\r\n          </p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">If clicking the link does not work, please copy-and-paste or re-type it into your browser's address bar and hit \"Enter\".</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">$OrganizationName API Team</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n          </p>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </body>\r\n</html>",
+                "title": "Email change confirmation",
+                "description": "Developers receive this email to confirm a new e-mail address after they change their existing one associated with their account.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    },
+                    {
+                        "name": "ConfirmUrl",
+                        "title": "Developer confirmation URL"
+                    },
+                    {
+                        "name": "DevPortalHost",
+                        "title": "Developer portal hostname"
+                    },
+                    {
+                        "name": "ConfirmQuery",
+                        "title": "Query string part of the confirmation URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/InviteUserNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "You are invited to join the $OrganizationName developer network",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          Your account has been created. Please follow the link below to visit the $OrganizationName developer portal and claim it:\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <a href=\"$ConfirmUrl\">$ConfirmUrl</a>\r\n    </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Best,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n  </body>\r\n</html>",
+                "title": "Invite user",
+                "description": "An e-mail invitation to create an account, sent on request by API publishers.",
+                "parameters": [
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "ConfirmUrl",
+                        "title": "Confirmation link"
+                    },
+                    {
+                        "name": "DevPortalHost",
+                        "title": "Developer portal hostname"
+                    },
+                    {
+                        "name": "ConfirmQuery",
+                        "title": "Query string part of the confirmation link"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/NewCommentNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "$IssueName issue has a new comment",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">This is a brief note to let you know that $CommenterFirstName $CommenterLastName made the following comment on the issue $IssueName you created:</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">$CommentText</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          To view the issue on the developer portal click <a href=\"http://$DevPortalUrl/issues/$IssueId\">here</a>.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Best,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n  </body>\r\n</html>",
+                "title": "New comment added to an issue",
+                "description": "Developers receive this email when someone comments on the issue they created on the Issues page of the developer portal.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "CommenterFirstName",
+                        "title": "Commenter first name"
+                    },
+                    {
+                        "name": "CommenterLastName",
+                        "title": "Commenter last name"
+                    },
+                    {
+                        "name": "IssueId",
+                        "title": "Issue id"
+                    },
+                    {
+                        "name": "IssueName",
+                        "title": "Issue name"
+                    },
+                    {
+                        "name": "CommentText",
+                        "title": "Comment text"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/NewDeveloperNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Welcome to the $OrganizationName API!",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <title>Letter</title>\r\n  </head>\r\n  <body>\r\n    <h1 style=\"color:#000505;font-size:18pt;font-family:'Segoe UI'\">\r\n          Welcome to <span style=\"color:#003363\">$OrganizationName API!</span></h1>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Your $OrganizationName API program registration is completed and we are thrilled to have you as a customer. Here are a few important bits of information for your reference:</p>\r\n    <table width=\"100%\" style=\"margin:20px 0\">\r\n      <tr>\r\n            #if ($IdentityProvider == \"Basic\")\r\n            <td width=\"50%\" style=\"height:40px;vertical-align:top;font-family:'Segoe UI';font-size:12pt\">\r\n              Please use the following <strong>username</strong> when signing into any of the ${OrganizationName}-hosted developer portals:\r\n            </td><td style=\"vertical-align:top;font-family:'Segoe UI';font-size:12pt\"><strong>$DevUsername</strong></td>\r\n            #else\r\n            <td width=\"50%\" style=\"height:40px;vertical-align:top;font-family:'Segoe UI';font-size:12pt\">\r\n              Please use the following <strong>$IdentityProvider account</strong> when signing into any of the ${OrganizationName}-hosted developer portals:\r\n            </td><td style=\"vertical-align:top;font-family:'Segoe UI';font-size:12pt\"><strong>$DevUsername</strong></td>            \r\n            #end\r\n          </tr>\r\n      <tr>\r\n        <td style=\"height:40px;vertical-align:top;font-family:'Segoe UI';font-size:12pt\">\r\n              We will direct all communications to the following <strong>email address</strong>:\r\n            </td>\r\n        <td style=\"vertical-align:top;font-family:'Segoe UI';font-size:12pt\">\r\n          <a href=\"mailto:$DevEmail\" style=\"text-decoration:none\">\r\n            <strong>$DevEmail</strong>\r\n          </a>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Best of luck in your API pursuits!</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">$OrganizationName API Team</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <a href=\"http://$DevPortalUrl\">$DevPortalUrl</a>\r\n    </p>\r\n  </body>\r\n</html>",
+                "title": "Developer welcome letter",
+                "description": "Developers receive this “welcome” email after they confirm their new account.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "DevUsername",
+                        "title": "Developer user name"
+                    },
+                    {
+                        "name": "DevEmail",
+                        "title": "Developer email"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    },
+                    {
+                        "name": "IdentityProvider",
+                        "title": "Identity Provider selected by Organization"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/NewIssueNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your request $IssueName was received",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you for contacting us. Our API team will review your issue and get back to you soon.</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          Click this <a href=\"http://$DevPortalUrl/issues/$IssueId\">link</a> to view or edit your request.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Best,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n  </body>\r\n</html>",
+                "title": "New issue received",
+                "description": "This email is sent to developers after they create a new topic on the Issues page of the developer portal.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "IssueId",
+                        "title": "Issue id"
+                    },
+                    {
+                        "name": "IssueName",
+                        "title": "Issue name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/PasswordResetByAdminNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your password was reset",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <table width=\"100%\">\r\n      <tr>\r\n        <td>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\"></p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">The password of your $OrganizationName API account has been reset, per your request.</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n                Your new password is: <strong>$DevPassword</strong></p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Please make sure to change it next time you sign in.</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">$OrganizationName API Team</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n          </p>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </body>\r\n</html>",
+                "title": "Password reset by publisher notification (Password reset by admin)",
+                "description": "Developers receive this email when the publisher resets their password.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "DevPassword",
+                        "title": "New Developer password"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/PasswordResetIdentityDefault')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your password change request",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head>\r\n    <meta charset=\"UTF-8\" />\r\n    <title>Letter</title>\r\n  </head>\r\n  <body>\r\n    <table width=\"100%\">\r\n      <tr>\r\n        <td>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\"></p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">You are receiving this email because you requested to change the password on your $OrganizationName API account.</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Please click on the link below and follow instructions to create your new password:</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a id=\"resetUrl\" href=\"$ConfirmUrl\" style=\"text-decoration:none\">\r\n              <strong>$ConfirmUrl</strong>\r\n            </a>\r\n          </p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">If clicking the link does not work, please copy-and-paste or re-type it into your browser's address bar and hit \"Enter\".</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">$OrganizationName API Team</p>\r\n          <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n          </p>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </body>\r\n</html>",
+                "title": "Password change confirmation",
+                "description": "Developers receive this email when they request a password change of their account. The purpose of the email is to verify that the account owner made the request and to provide a one-time perishable URL for changing the password.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    },
+                    {
+                        "name": "ConfirmUrl",
+                        "title": "Developer new password instruction URL"
+                    },
+                    {
+                        "name": "DevPortalHost",
+                        "title": "Developer portal hostname"
+                    },
+                    {
+                        "name": "ConfirmQuery",
+                        "title": "Query string part of the instruction URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/PurchaseDeveloperNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your subscription to the $ProdName",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Greetings $DevFirstName $DevLastName!</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          Thank you for subscribing to the <a href=\"http://$DevPortalUrl/products/$ProdId\"><strong>$ProdName</strong></a> and welcome to the $OrganizationName developer community. We are delighted to have you as part of the team and are looking forward to the amazing applications you will build using our API!\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Below are a few subscription details for your reference:</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <ul>\r\n            #if ($SubStartDate != \"\")\r\n            <li style=\"font-size:12pt;font-family:'Segoe UI'\">Start date: $SubStartDate</li>\r\n            #end\r\n            \r\n            #if ($SubTerm != \"\")\r\n            <li style=\"font-size:12pt;font-family:'Segoe UI'\">Subscription term: $SubTerm</li>\r\n            #end\r\n          </ul>\r\n    </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n            Visit the developer <a href=\"http://$DevPortalUrl/developer\">profile area</a> to manage your subscription and subscription keys\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">A couple of pointers to help get you started:</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <strong>\r\n        <a href=\"http://$DevPortalUrl/docs/services?product=$ProdId\">Learn about the API</a>\r\n      </strong>\r\n    </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The API documentation provides all information necessary to make a request and to process a response. Code samples are provided per API operation in a variety of languages. Moreover, an interactive console allows making API calls directly from the developer portal without writing any code.</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <strong>\r\n        <a href=\"http://$DevPortalUrl/applications\">Feature your app in the app gallery</a>\r\n      </strong>\r\n    </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">You can publish your application on our gallery for increased visibility to potential new users.</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n      <strong>\r\n        <a href=\"http://$DevPortalUrl/issues\">Stay in touch</a>\r\n      </strong>\r\n    </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          If you have an issue, a question, a suggestion, a request, or if you just want to tell us something, go to the <a href=\"http://$DevPortalUrl/issues\">Issues</a> page on the developer portal and create a new topic.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Happy hacking,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n    <a style=\"font-size:12pt;font-family:'Segoe UI'\" href=\"http://$DevPortalUrl\">$DevPortalUrl</a>\r\n  </body>\r\n</html>",
+                "title": "New subscription activated",
+                "description": "Developers receive this acknowledgement email after subscribing to a product.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "ProdId",
+                        "title": "Product ID"
+                    },
+                    {
+                        "name": "ProdName",
+                        "title": "Product name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "SubStartDate",
+                        "title": "Subscription start date"
+                    },
+                    {
+                        "name": "SubTerm",
+                        "title": "Subscription term"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/QuotaLimitApproachingDeveloperNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "You are approaching an API quota limit",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head>\r\n    <style>\r\n          body {font-size:12pt; font-family:\"Segoe UI\",\"Segoe WP\",\"Tahoma\",\"Arial\",\"sans-serif\";}\r\n          .alert { color: red; }\r\n          .child1 { padding-left: 20px; }\r\n          .child2 { padding-left: 40px; }\r\n          .number { text-align: right; }\r\n          .text { text-align: left; }\r\n          th, td { padding: 4px 10px; min-width: 100px; }\r\n          th { background-color: #DDDDDD;}\r\n        </style>\r\n  </head>\r\n  <body>\r\n    <p>Greetings $DevFirstName $DevLastName!</p>\r\n    <p>\r\n          You are approaching the quota limit on you subscription to the <strong>$ProdName</strong> product (primary key $SubPrimaryKey).\r\n          #if ($QuotaResetDate != \"\")\r\n          This quota will be renewed on $QuotaResetDate.\r\n          #else\r\n          This quota will not be renewed.\r\n          #end\r\n        </p>\r\n    <p>Below are details on quota usage for the subscription:</p>\r\n    <p>\r\n      <table>\r\n        <thead>\r\n          <th class=\"text\">Quota Scope</th>\r\n          <th class=\"number\">Calls</th>\r\n          <th class=\"number\">Call Quota</th>\r\n          <th class=\"number\">Bandwidth</th>\r\n          <th class=\"number\">Bandwidth Quota</th>\r\n        </thead>\r\n        <tbody>\r\n          <tr>\r\n            <td class=\"text\">Subscription</td>\r\n            <td class=\"number\">\r\n                  #if ($CallsAlert == true)\r\n                  <span class=\"alert\">$Calls</span>\r\n                  #else\r\n                  $Calls\r\n                  #end\r\n                </td>\r\n            <td class=\"number\">$CallQuota</td>\r\n            <td class=\"number\">\r\n                  #if ($BandwidthAlert == true)\r\n                  <span class=\"alert\">$Bandwidth</span>\r\n                  #else\r\n                  $Bandwidth\r\n                  #end\r\n                </td>\r\n            <td class=\"number\">$BandwidthQuota</td>\r\n          </tr>\r\n              #foreach ($api in $Apis)\r\n              <tr><td class=\"child1 text\">API: $api.Name</td><td class=\"number\">\r\n                  #if ($api.CallsAlert == true)\r\n                  <span class=\"alert\">$api.Calls</span>\r\n                  #else\r\n                  $api.Calls\r\n                  #end\r\n                </td><td class=\"number\">$api.CallQuota</td><td class=\"number\">\r\n                  #if ($api.BandwidthAlert == true)\r\n                  <span class=\"alert\">$api.Bandwidth</span>\r\n                  #else\r\n                  $api.Bandwidth\r\n                  #end\r\n                </td><td class=\"number\">$api.BandwidthQuota</td></tr>\r\n              #foreach ($operation in $api.Operations)\r\n              <tr><td class=\"child2 text\">Operation: $operation.Name</td><td class=\"number\">\r\n                  #if ($operation.CallsAlert == true)\r\n                  <span class=\"alert\">$operation.Calls</span>\r\n                  #else\r\n                  $operation.Calls\r\n                  #end\r\n                </td><td class=\"number\">$operation.CallQuota</td><td class=\"number\">\r\n                  #if ($operation.BandwidthAlert == true)\r\n                  <span class=\"alert\">$operation.Bandwidth</span>\r\n                  #else\r\n                  $operation.Bandwidth\r\n                  #end\r\n                </td><td class=\"number\">$operation.BandwidthQuota</td></tr>\r\n              #end\r\n              #end\r\n            </tbody>\r\n      </table>\r\n    </p>\r\n    <p>Thank you,</p>\r\n    <p>$OrganizationName API Team</p>\r\n    <a href=\"$DevPortalUrl\">$DevPortalUrl</a>\r\n    <p />\r\n  </body>\r\n</html>",
+                "title": "Developer quota limit approaching notification",
+                "description": "Developers receive this email to alert them when they are approaching a quota limit.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "ProdName",
+                        "title": "Product name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "SubPrimaryKey",
+                        "title": "Primary Subscription key"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    },
+                    {
+                        "name": "QuotaResetDate",
+                        "title": "Quota reset date"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/RejectDeveloperNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your subscription request for the $ProdName",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          We would like to inform you that we reviewed your subscription request for the <strong>$ProdName</strong>.\r\n        </p>\r\n        #if ($SubDeclineReason == \"\")\r\n        <p style=\"font-size:12pt;font-family:'Segoe UI'\">Regretfully, we were unable to approve it, as subscriptions are temporarily suspended at this time.</p>\r\n        #else\r\n        <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          Regretfully, we were unable to approve it at this time for the following reason:\r\n          <div style=\"margin-left: 1.5em;\"> $SubDeclineReason </div></p>\r\n        #end\r\n        <p style=\"font-size:12pt;font-family:'Segoe UI'\"> We truly appreciate your interest. </p><p style=\"font-size:12pt;font-family:'Segoe UI'\">All the best,</p><p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p><a style=\"font-size:12pt;font-family:'Segoe UI'\" href=\"http://$DevPortalUrl\">$DevPortalUrl</a></body>\r\n</html>",
+                "title": "Subscription request declined",
+                "description": "This email is sent to developers when their subscription requests for products requiring publisher approval is declined.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "SubDeclineReason",
+                        "title": "Reason for declining subscription"
+                    },
+                    {
+                        "name": "ProdName",
+                        "title": "Product name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/templates",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/RequestDeveloperNotificationMessage')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "subject": "Your subscription request for the $ProdName",
+                "body": "<!DOCTYPE html >\r\n<html>\r\n  <head />\r\n  <body>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Dear $DevFirstName $DevLastName,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          Thank you for your interest in our <strong>$ProdName</strong> API product!\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">\r\n          We were delighted to receive your subscription request. We will promptly review it and get back to you at <strong>$DevEmail</strong>.\r\n        </p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">Thank you,</p>\r\n    <p style=\"font-size:12pt;font-family:'Segoe UI'\">The $OrganizationName API Team</p>\r\n    <a style=\"font-size:12pt;font-family:'Segoe UI'\" href=\"http://$DevPortalUrl\">$DevPortalUrl</a>\r\n  </body>\r\n</html>",
+                "title": "Subscription request received",
+                "description": "This email is sent to developers to acknowledge receipt of their subscription requests for products requiring publisher approval.",
+                "parameters": [
+                    {
+                        "name": "DevFirstName",
+                        "title": "Developer first name"
+                    },
+                    {
+                        "name": "DevLastName",
+                        "title": "Developer last name"
+                    },
+                    {
+                        "name": "DevEmail",
+                        "title": "Developer email"
+                    },
+                    {
+                        "name": "ProdName",
+                        "title": "Product name"
+                    },
+                    {
+                        "name": "OrganizationName",
+                        "title": "Organization name"
+                    },
+                    {
+                        "name": "DevPortalUrl",
+                        "title": "Developer portal URL"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/users",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/1')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "firstName": "Administrator",
+                "email": "mapankra@microsoft.com",
+                "state": "active",
+                "identities": [
+                    {
+                        "provider": "Azure",
+                        "id": "mapankra@microsoft.com"
+                    }
+                ],
+                "lastName": "[parameters('users_1_lastName')]"
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2016-10-01",
+            "name": "[concat(parameters('vaults_project_secrets_name'), '/myBasic')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('vaults_project_secrets_name'))]"
+            ],
+            "properties": {
+                "contentType": "Basic Auth Token",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_GetDataES5_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_keyvault_name'))]"
+            ],
+            "properties": {
+                "state": "Disabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Month",
+                                "interval": 1,
+                                "timeZone": "GMT Standard Time"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "For_each": {
+                            "foreach": "@body('Parse_JSON')?['d']?['results']",
+                            "actions": {
+                                "Insert_or_Merge_Entity": {
+                                    "runAfter": {},
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "body": {
+                                            "name": "@items('For_each')?['CARRNAME']"
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['azuretables']['connectionId']"
+                                            }
+                                        },
+                                        "method": "patch",
+                                        "path": "/Tables/@{encodeURIComponent('SapEs5FlightSample')}/entities(PartitionKey='@{encodeURIComponent('rmtsampleflight')}',RowKey='@{encodeURIComponent(items('For_each')?['carrid'])}')"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Parse_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "Get_secret": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['keyvault']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/secrets/@{encodeURIComponent('myBasic')}/value"
+                            }
+                        },
+                        "HTTP": {
+                            "runAfter": {
+                                "Get_secret": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Http",
+                            "inputs": {
+                                "headers": {
+                                    "Accept": "application/json;odata=verbose",
+                                    "Authorization": "@body('Get_secret')?['value']"
+                                },
+                                "method": "GET",
+                                "uri": "https://sapes5.sapdevcenter.com/sap/opu/odata/iwfnd/rmtsampleflight/CarrierCollection"
+                            }
+                        },
+                        "Parse_JSON": {
+                            "runAfter": {
+                                "HTTP": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@body('HTTP')",
+                                "schema": {
+                                    "properties": {
+                                        "d": {
+                                            "properties": {
+                                                "results": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "CARRNAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "CURRCODE": {
+                                                                "type": "string"
+                                                            },
+                                                            "URL": {
+                                                                "type": "string"
+                                                            },
+                                                            "__metadata": {
+                                                                "properties": {
+                                                                    "content_type": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "edit_media": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "id": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "media_src": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "uri": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "carrid": {
+                                                                "type": "string"
+                                                            },
+                                                            "carrierFlights": {
+                                                                "properties": {
+                                                                    "__deferred": {
+                                                                        "properties": {
+                                                                            "uri": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "carrierFlights_FW": {
+                                                                "properties": {
+                                                                    "__deferred": {
+                                                                        "properties": {
+                                                                            "uri": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "mimeType": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "__metadata",
+                                                            "carrid",
+                                                            "CARRNAME",
+                                                            "CURRCODE",
+                                                            "URL",
+                                                            "mimeType",
+                                                            "carrierFlights",
+                                                            "carrierFlights_FW"
+                                                        ],
+                                                        "type": "object"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azuretables": {
+                                "connectionId": "[parameters('connections_azuretables_externalid')]",
+                                "connectionName": "azuretables",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/azuretables"
+                            },
+                            "keyvault": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_keyvault_name'))]",
+                                "connectionName": "keyvault",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/keyvault"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_GetDataStorageAccount_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_azuretables_1_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "method": "GET",
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Get_entities": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azuretables_1']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/Tables/@{encodeURIComponent('SapEs5FlightSample')}/entities"
+                            }
+                        },
+                        "Get_entities_2": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azuretables_1']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/Tables/@{encodeURIComponent('TwitterSentiment')}/entities"
+                            }
+                        },
+                        "Response": {
+                            "runAfter": {
+                                "Get_entities": [
+                                    "Succeeded"
+                                ],
+                                "Get_entities_2": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Response",
+                            "kind": "Http",
+                            "inputs": {
+                                "body": [
+                                    "@body('Get_entities')",
+                                    "@body('Get_entities_2')"
+                                ],
+                                "statusCode": 200
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azuretables_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_azuretables_1_name'))]",
+                                "connectionName": "azuretables-1",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/azuretables"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccounts_sapstoresa_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sapstoresa_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccounts_sapstoresa_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sapstoresa_name'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('sites_sapxapp_name')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_sapprojectx_89f8_name'))]"
+            ],
+            "kind": "app,linux,container",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(parameters('sites_sapxapp_name'), '.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(parameters('sites_sapxapp_name'), '.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_sapprojectx_89f8_name'))]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "redundancyMode": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/web')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "DOCKER|<<<your registry>>>.azurecr.io/<<<your repos>>>:latest",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$sapxapp",
+                "scmType": "None",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": true,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": true
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "13.69.100.117/32",
+                        "action": "Allow",
+                        "tag": "Default",
+                        "priority": 300,
+                        "name": "apim",
+                        "description": "APIM"
+                    },
+                    {
+                        "ipAddress": "Any",
+                        "action": "Deny",
+                        "priority": 2147483647,
+                        "name": "Deny all",
+                        "description": "Deny all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "ftpsState": "AllAllowed",
+                "reservedInstanceCount": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/', parameters('sites_sapxapp_name'), '.azurewebsites.net')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "siteName": "sapxapp",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/create-resource')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Create resource",
+                "method": "POST",
+                "urlTemplate": "/resource",
+                "templateParameters": [],
+                "description": "A demonstration of a POST call based on the echo backend above. The request body is expected to contain JSON-formatted data (see example below). A policy is used to automatically transform any request sent in JSON directly to XML. In a real-world scenario this could be used to enable modern clients to speak to a legacy backend.",
+                "request": {
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "sample": "{\r\n\t\"vehicleType\": \"train\",\r\n\t\"maxSpeed\": 125,\r\n\t\"avgSpeed\": 90,\r\n\t\"speedUnit\": \"mph\"\r\n}"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/create-task')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "create-task",
+                "method": "POST",
+                "urlTemplate": "/task",
+                "templateParameters": [],
+                "responses": []
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/create-task')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "create-task",
+                "method": "POST",
+                "urlTemplate": "/task",
+                "templateParameters": [],
+                "responses": []
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/manual-invoke')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "manual-invoke",
+                "method": "GET",
+                "urlTemplate": "/manual/paths/invoke",
+                "templateParameters": [],
+                "description": "Trigger a run of the logic app.",
+                "request": {
+                    "description": "The request body.",
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "schemaId": "5e09c342ed428209203adcaf",
+                            "typeName": "request-manual"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "The Logic App Response.",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "schemaId": "5e09c342ed428209203adcaf",
+                                "typeName": "ManualPathsInvokeGet200ApplicationJsonResponse"
+                            }
+                        ],
+                        "headers": []
+                    },
+                    {
+                        "statusCode": 500,
+                        "description": "The Logic App Response.",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "schemaId": "5e09c342ed428209203adcaf",
+                                "typeName": "ManualPathsInvokeGet500ApplicationJsonResponse"
+                            }
+                        ],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/manual-invoke')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "manual-invoke",
+                "method": "GET",
+                "urlTemplate": "/manual/paths/invoke",
+                "templateParameters": [],
+                "description": "Trigger a run of the logic app.",
+                "request": {
+                    "description": "The request body.",
+                    "queryParameters": [],
+                    "headers": [],
+                    "representations": [
+                        {
+                            "contentType": "application/json",
+                            "schemaId": "5e09c468ed428209203adcba",
+                            "typeName": "request-manual"
+                        }
+                    ]
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "The Logic App Response.",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "schemaId": "5e09c468ed428209203adcba",
+                                "typeName": "ManualPathsInvokeGet200ApplicationJsonResponse"
+                            }
+                        ],
+                        "headers": []
+                    },
+                    {
+                        "statusCode": 500,
+                        "description": "The Logic App Response.",
+                        "representations": [
+                            {
+                                "contentType": "application/json",
+                                "schemaId": "5e09c468ed428209203adcba",
+                                "typeName": "ManualPathsInvokeGet500ApplicationJsonResponse"
+                            }
+                        ],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/modify-resource')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Modify Resource",
+                "method": "PUT",
+                "urlTemplate": "/resource",
+                "templateParameters": [],
+                "description": "A demonstration of a PUT call handled by the same \"echo\" backend as above. You can now specify a request body in addition to headers and it will be returned as well.",
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/remove-resource')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Remove resource",
+                "method": "DELETE",
+                "urlTemplate": "/resource",
+                "templateParameters": [],
+                "description": "A demonstration of a DELETE call which traditionally deletes the resource. It is based on the same \"echo\" backend as in all other operations so nothing is actually deleted.",
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/retrieve-header-only')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Retrieve header only",
+                "method": "HEAD",
+                "urlTemplate": "/resource",
+                "templateParameters": [],
+                "description": "The HEAD operation returns only headers. In this demonstration a policy is used to set additional headers when the response is returned and to enable JSONP.",
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/retrieve-resource')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Retrieve resource",
+                "method": "GET",
+                "urlTemplate": "/resource",
+                "templateParameters": [],
+                "description": "A demonstration of a GET call on a sample resource. It is handled by an \"echo\" backend which returns a response equal to the request (the supplied headers and body are being returned as received).",
+                "request": {
+                    "queryParameters": [
+                        {
+                            "name": "param1",
+                            "description": "A sample parameter that is required and has a default value of \"sample\".",
+                            "type": "string",
+                            "defaultValue": "sample",
+                            "required": true,
+                            "values": [
+                                "sample"
+                            ]
+                        },
+                        {
+                            "name": "param2",
+                            "description": "Another sample parameter, set to not required.",
+                            "type": "number",
+                            "values": []
+                        }
+                    ],
+                    "headers": [],
+                    "representations": []
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "description": "Returned in all cases.",
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/retrieve-resource-cached')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "displayName": "Retrieve resource (cached)",
+                "method": "GET",
+                "urlTemplate": "/resource-cached",
+                "templateParameters": [],
+                "description": "A demonstration of a GET call with caching enabled on the same \"echo\" backend as above. Cache TTL is set to 1 hour. When you make the first request the headers you supplied will be cached. Subsequent calls will return the same headers as the first time even if you change them in your request.",
+                "request": {
+                    "queryParameters": [
+                        {
+                            "name": "param1",
+                            "description": "A sample parameter that is required and has a default value of \"sample\".",
+                            "type": "string",
+                            "defaultValue": "sample",
+                            "required": true,
+                            "values": [
+                                "sample"
+                            ]
+                        },
+                        {
+                            "name": "param2",
+                            "description": "Another sample parameter, set to not required.",
+                            "type": "string",
+                            "values": []
+                        }
+                    ],
+                    "headers": [],
+                    "representations": []
+                },
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"LogicApp_GetDataStorageAccount_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c\" />\r\n    <cors>\r\n      <allowed-origins>\r\n        <origin>https://sapxapp-dev.azurewebsites.net</origin>\r\n        <origin>https://sapxapp.azurewebsites.net</origin>\r\n      </allowed-origins>\r\n      <allowed-methods>\r\n        <method>GET</method>\r\n        <method>POST</method>\r\n      </allowed-methods>\r\n    </cors>\r\n    <set-header name=\"Authorization\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"LogicApp_GetDataStorageAccount_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c\" />\r\n    <check-header name=\"Authorization\" failed-check-httpcode=\"401\" failed-check-error-message=\"Not authorized\" ignore-case=\"false\">\r\n      <value>Basic c2NwOnFvc1ZNU2hmZWtYalZkTG10QWV1</value>\r\n    </check-header>\r\n    <set-header name=\"Authorization\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/schemas",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/5e09c342ed428209203adcaf')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "contentType": "application/vnd.ms-azure-apim.swagger.definitions+json",
+                "document": {}
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/schemas",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/5e09c468ed428209203adcba')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "contentType": "application/vnd.ms-azure-apim.swagger.definitions+json",
+                "document": {}
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/products/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/starter/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('service_auth_proxy_name'), 'starter')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n            IMPORTANT:\r\n            - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n            - Only the <forward-request> policy element can appear within the <backend> section element.\r\n            - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n            - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n            - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.\r\n            - To remove a policy, delete the corresponding policy statement from the policy document.\r\n            - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n            - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n            - Policies are applied in the order of their appearance, from the top down.\r\n        -->\r\n<policies>\r\n  <inbound>\r\n    <rate-limit calls=\"5\" renewal-period=\"60\" />\r\n    <quota calls=\"100\" renewal-period=\"604800\" />\r\n    <base />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_CreateDyn365Task_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_commondataservice_1_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "manual": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "method": "POST",
+                                "schema": {
+                                    "properties": {
+                                        "PartitionKey": {
+                                            "type": "string"
+                                        },
+                                        "RowKey": {
+                                            "type": "string"
+                                        },
+                                        "Timestamp": {
+                                            "type": "string"
+                                        },
+                                        "createdAt": {
+                                            "type": "string"
+                                        },
+                                        "odata.etag": {
+                                            "type": "string"
+                                        },
+                                        "score": {
+                                            "type": "number"
+                                        },
+                                        "text": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "For_each": {
+                            "foreach": "@body('List_records')?['value']",
+                            "actions": {
+                                "Create_a_new_record": {
+                                    "runAfter": {},
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "body": {
+                                            "_ownerid_type": "systemusers",
+                                            "_ownerid_value": "75b51416-2954-ea11-a815-000d3ab958d9",
+                                            "_regardingobjectid_type": "contacts",
+                                            "_regardingobjectid_value": "@items('For_each')?['contactid']",
+                                            "description": "Twitter Text: @{triggerFormDataValue('text')}",
+                                            "isbilled": false,
+                                            "isregularactivity": false,
+                                            "isworkflowcreated": false,
+                                            "prioritycode": 2,
+                                            "subject": "@triggerFormDataValue('title')"
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['commondataservice']['connectionId']"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('crm039456.crm4'))}/tables/@{encodeURIComponent(encodeURIComponent('tasks'))}/items"
+                                    }
+                                },
+                                "Post_a_message_(V3)": {
+                                    "runAfter": {
+                                        "Create_a_new_record": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "body": {
+                                            "body": {
+                                                "content": "<p>Hey Jeff,<br>\n<br>\nwas ist denn mit deinem Account los? Twitter meldet folgendes:<br>\n<br>\n<b>sap-x-project</b>: <i>@{triggerFormDataValue('text')}</i><br>\n<br>\nWir haben schon mal einen Task für dich erstellt. Hier geht's <a href=\"https://crm039456.crm4.dynamics.com/main.aspx?appid=2ce14366-cc4f-ea11-a815-000d3ab958d9&amp;pagetype=entityrecord&amp;etn=task&amp;id=@{body('Create_a_new_record')?['activityid']}\">lang.</a><br>\n</p>",
+                                                "contentType": "html"
+                                            }
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['teams']['connectionId']"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/v3/beta/teams/@{encodeURIComponent('d699ae0a-39e2-41d1-89ff-535c94e117d1')}/channels/@{encodeURIComponent('19:41178a19b619481b940d8e3c2ed5d692@thread.tacv2')}/messages"
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "List_records": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "List_records": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['commondataservice']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('crm039456.crm4'))}/tables/@{encodeURIComponent(encodeURIComponent('contacts'))}/items",
+                                "queries": {
+                                    "$filter": "msdyusd_twitter eq '1230128973738369000'"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "commondataservice": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_commondataservice_1_name'))]",
+                                "connectionName": "commondataservice-1",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/commondataservice"
+                            },
+                            "teams": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]",
+                                "connectionName": "teams",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/teams"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccounts_sapstoresa_name'), '/default/socialtwitter')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccounts_sapstoresa_name'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccounts_sapstoresa_name'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]",
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_sapprojectx_89f8_name'))]"
+            ],
+            "kind": "app,linux,container",
+            "properties": {
+                "enabled": true,
+                "hostNameSslStates": [
+                    {
+                        "name": "sapxapp-dev.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "sapxapp-dev.scm.azurewebsites.net",
+                        "sslState": "Disabled",
+                        "hostType": "Repository"
+                    }
+                ],
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_ASP_sapprojectx_89f8_name'))]",
+                "reserved": true,
+                "isXenon": false,
+                "hyperV": false,
+                "scmSiteAlsoStopped": false,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": false,
+                "redundancyMode": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/config",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/web')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "numberOfWorkers": 1,
+                "defaultDocuments": [
+                    "Default.htm",
+                    "Default.html",
+                    "Default.asp",
+                    "index.htm",
+                    "index.html",
+                    "iisstart.htm",
+                    "default.aspx",
+                    "index.php",
+                    "hostingstart.html"
+                ],
+                "netFrameworkVersion": "v4.0",
+                "linuxFxVersion": "DOCKER|sapxacr.azurecr.io/sapxrepos:latest",
+                "requestTracingEnabled": false,
+                "remoteDebuggingEnabled": false,
+                "remoteDebuggingVersion": "VS2019",
+                "httpLoggingEnabled": false,
+                "logsDirectorySizeLimit": 35,
+                "detailedErrorLoggingEnabled": false,
+                "publishingUsername": "$sapxapp__dev",
+                "scmType": "VSTSRM",
+                "use32BitWorkerProcess": true,
+                "webSocketsEnabled": false,
+                "alwaysOn": false,
+                "managedPipelineMode": "Integrated",
+                "virtualApplications": [
+                    {
+                        "virtualPath": "/",
+                        "physicalPath": "site\\wwwroot",
+                        "preloadEnabled": false
+                    }
+                ],
+                "loadBalancing": "LeastRequests",
+                "experiments": {
+                    "rampUpRules": []
+                },
+                "autoHealEnabled": false,
+                "localMySqlEnabled": false,
+                "ipSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictions": [
+                    {
+                        "ipAddress": "Any",
+                        "action": "Allow",
+                        "priority": 1,
+                        "name": "Allow all",
+                        "description": "Allow all access"
+                    }
+                ],
+                "scmIpSecurityRestrictionsUseMain": false,
+                "http20Enabled": false,
+                "minTlsVersion": "1.2",
+                "ftpsState": "AllAllowed",
+                "reservedInstanceCount": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/101583235970318')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"b10af008c7ecb2440290b36812f4cb51ab3d81c7\",\"buildId\":\"111\",\"releaseId\":\"10\",\"buildNumber\":\"111\",\"releaseName\":\"Release-8\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-03T11:46:11.1344693Z",
+                "end_time": "2020-03-03T11:46:11.1344693Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/111583243049333')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"39c84b73b967a9410138959c5dc629381651ab57\",\"buildId\":\"112\",\"releaseId\":\"11\",\"buildNumber\":\"112\",\"releaseName\":\"Release-9\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-03T13:44:09.7353446Z",
+                "end_time": "2020-03-03T13:44:09.7353446Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/121583247942915')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"1a33b4649cf3c3b514677f937118e4149d38b7c5\",\"buildId\":\"113\",\"releaseId\":\"12\",\"buildNumber\":\"113\",\"releaseName\":\"Release-10\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-03T15:05:44.6352834Z",
+                "end_time": "2020-03-03T15:05:44.6352834Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/131583309961949')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"ab5d8d80fdaee6d58b61dc9efc2790da3a1bab6c\",\"buildId\":\"114\",\"releaseId\":\"13\",\"buildNumber\":\"114\",\"releaseName\":\"Release-11\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-04T08:19:23.5686185Z",
+                "end_time": "2020-03-04T08:19:23.5686185Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/141583311653394')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"b33b11304cfbedc0c12de9475773ca84c3d9fb7c\",\"buildId\":\"115\",\"releaseId\":\"14\",\"buildNumber\":\"115\",\"releaseName\":\"Release-12\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-04T08:47:34.0583455Z",
+                "end_time": "2020-03-04T08:47:34.0583455Z",
+                "active": true
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/51578994673198')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "Martin Pankraz",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"3013fee105613cea23118441bc35c3d63fcd552c\",\"buildId\":\"106\",\"releaseId\":\"5\",\"buildNumber\":\"106\",\"releaseName\":\"Release-3\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-01-14T09:37:53.7401154Z",
+                "end_time": "2020-01-14T09:37:53.7401154Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/61578997949610')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"4e149893a63e4979d11e7e529ff6368ff8d20b3d\",\"buildId\":\"107\",\"releaseId\":\"6\",\"buildNumber\":\"107\",\"releaseName\":\"Release-4\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-01-14T10:32:30.4926801Z",
+                "end_time": "2020-01-14T10:32:30.4926801Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/71578999034535')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"a2916b49849f2b186f081bee2684c9f25ce0f8af\",\"buildId\":\"108\",\"releaseId\":\"7\",\"buildNumber\":\"108\",\"releaseName\":\"Release-5\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-01-14T10:50:35.5784828Z",
+                "end_time": "2020-01-14T10:50:35.5784828Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/81582732314813')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"f864bdbbcedcf2a680c8b183bac4a04da9f450c1\",\"buildId\":\"109\",\"releaseId\":\"8\",\"buildNumber\":\"109\",\"releaseName\":\"Release-6\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-02-26T15:51:58.4281796Z",
+                "end_time": "2020-02-26T15:51:58.4281796Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/deployments",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/91583235259299')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "status": 4,
+                "author": "GitHub",
+                "deployer": "VSTS",
+                "message": "{\"type\":\"Deployment\",\"commitId\":\"13dd18e64d21aa252048f7846ef18592b133d7d4\",\"buildId\":\"110\",\"releaseId\":\"9\",\"buildNumber\":\"110\",\"releaseName\":\"Release-7\",\"repoProvider\":\"GitHub\",\"repoName\":\"MartinPankraz/SAP-X-Fiori\",\"collectionUrl\":\"https://dev.azure.com/mukurtul/\",\"teamProject\":\"18fb7901-485c-4d2e-974c-69ed16240196\",\"buildProjectUrl\":\"https://dev.azure.com/mukurtul/18fb7901-485c-4d2e-974c-69ed16240196\",\"repositoryUrl\":\"\",\"branch\":\"master\",\"teamProjectName\":\"Project X\",\"slotName\":\"dev\"}",
+                "start_time": "2020-03-03T11:34:21.7140418Z",
+                "end_time": "2020-03-03T11:34:21.7140418Z",
+                "active": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/slots/hostNameBindings",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('sites_sapxapp_name'), '/dev/', parameters('sites_sapxapp_name'), '-dev.azurewebsites.net')]",
+            "location": "West Europe",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', parameters('sites_sapxapp_name'), 'dev')]",
+                "[resourceId('Microsoft.Web/sites', parameters('sites_sapxapp_name'))]"
+            ],
+            "properties": {
+                "siteName": "sapxapp(dev)",
+                "hostNameType": "Verified"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/create-resource/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'echo-api', 'create-resource')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <json-to-xml apply=\"always\" consider-accept-header=\"false\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/retrieve-header-only/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'echo-api', 'retrieve-header-only')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n    <set-header name=\"X-My-Sample\" exists-action=\"override\">\r\n      <value>This is a sample</value>\r\n      <!-- for multiple headers with the same name add additional value elements -->\r\n    </set-header>\r\n    <jsonp callback-parameter-name=\"ProcessResponse\" />\r\n  </outbound>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/echo-api/retrieve-resource-cached/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'echo-api', 'retrieve-resource-cached')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'echo-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <cache-lookup vary-by-developer=\"false\" vary-by-developer-groups=\"false\">\r\n      <vary-by-header>Accept</vary-by-header>\r\n      <vary-by-header>Accept-Charset</vary-by-header>\r\n    </cache-lookup>\r\n    <rewrite-uri template=\"/resource\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n    <cache-store duration=\"3600\" />\r\n  </outbound>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/create-task/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'getdatastorageaccount', 'create-task')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"LogicApp_CreateDyn365Task_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c\" />\r\n    <set-method id=\"apim-generated-policy\">POST</set-method>\r\n    <rewrite-uri id=\"apim-generated-policy\" template=\"/manual/paths/invoke/?api-version=2016-06-01&amp;sp=/triggers/manual/run&amp;sv=1.0&amp;sig={{getdatastorageaccount_create-task_5e5e622d7d14a19758521abc}}\" />\r\n    <set-header id=\"apim-generated-policy\" name=\"Ocp-Apim-Subscription-Key\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/getdatastorageaccount/manual-invoke/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'getdatastorageaccount', 'manual-invoke')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'getdatastorageaccount')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method id=\"apim-generated-policy\">GET</set-method>\r\n    <rewrite-uri id=\"apim-generated-policy\" template=\"/manual/paths/invoke/?api-version=2016-06-01&amp;sp=/triggers/manual/run&amp;sv=1.0&amp;sig={{getdatastorageaccount_manual-invoke_5e09c3521d85685147375c1f}}\" />\r\n    <set-header id=\"apim-generated-policy\" name=\"Ocp-Apim-Subscription-Key\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/create-task/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'smart-flight-api', 'create-task')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-backend-service id=\"apim-generated-policy\" backend-id=\"LogicApp_CreateDyn365Task_sap-project-x_a1a90e6d585e4e5098bf893d80d6705c\" />\r\n    <set-method id=\"apim-generated-policy\">POST</set-method>\r\n    <rewrite-uri id=\"apim-generated-policy\" template=\"/manual/paths/invoke/?api-version=2016-06-01&amp;sp=/triggers/manual/run&amp;sv=1.0&amp;sig={{smart-flight-api_create-task_5e5d4ea88337fc4aa1b32059}}\" />\r\n    <set-header id=\"apim-generated-policy\" name=\"Ocp-Apim-Subscription-Key\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/smart-flight-api/manual-invoke/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('service_auth_proxy_name'), 'smart-flight-api', 'manual-invoke')]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('service_auth_proxy_name'), 'smart-flight-api')]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]"
+            ],
+            "properties": {
+                "value": "<policies>\r\n  <inbound>\r\n    <base />\r\n    <set-method id=\"apim-generated-policy\">GET</set-method>\r\n    <rewrite-uri id=\"apim-generated-policy\" template=\"/manual/paths/invoke/?api-version=2016-06-01&amp;sp=/triggers/manual/run&amp;sv=1.0&amp;sig={{smart-flight-api_manual-invoke_5e09c46edb150cd7c1fbab59}}\" />\r\n    <set-header id=\"apim-generated-policy\" name=\"Ocp-Apim-Subscription-Key\" exists-action=\"delete\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/subscriptions",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e01fdadc2dc55009a070001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]",
+                "[resourceId('Microsoft.ApiManagement/service/users', parameters('service_auth_proxy_name'), '1')]",
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('service_auth_proxy_name'), 'starter')]"
+            ],
+            "properties": {
+                "ownerId": "[resourceId('Microsoft.ApiManagement/service/users', parameters('service_auth_proxy_name'), '1')]",
+                "scope": "[resourceId('Microsoft.ApiManagement/service/products', parameters('service_auth_proxy_name'), 'starter')]",
+                "state": "active",
+                "primaryKey": "5f4ad49f8c2947f1aeaf3e74bd4889c1",
+                "secondaryKey": "39c417a441304a6ca23446e9e17c69a6",
+                "allowTracing": true,
+                "displayName": "[parameters('subscriptions_5e01fdadc2dc55009a070001_displayName')]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/subscriptions",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('service_auth_proxy_name'), '/5e01fdadc2dc55009a070002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('service_auth_proxy_name'))]",
+                "[resourceId('Microsoft.ApiManagement/service/users', parameters('service_auth_proxy_name'), '1')]",
+                "[resourceId('Microsoft.ApiManagement/service/products', parameters('service_auth_proxy_name'), 'unlimited')]"
+            ],
+            "properties": {
+                "ownerId": "[resourceId('Microsoft.ApiManagement/service/users', parameters('service_auth_proxy_name'), '1')]",
+                "scope": "[resourceId('Microsoft.ApiManagement/service/products', parameters('service_auth_proxy_name'), 'unlimited')]",
+                "state": "active",
+                "primaryKey": "fae5b06e5e8e43fc8202ac3379f50112",
+                "secondaryKey": "10572d2213374eae8ba3f45cbb30bd56",
+                "allowTracing": true,
+                "displayName": "[parameters('subscriptions_5e01fdadc2dc55009a070002_displayName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_TwitterSentiment_name')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/connections', parameters('connections_azuretables_1_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_cognitiveservicestextanalytics_1_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_commondataservice_1_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]",
+                "[resourceId('Microsoft.Web/connections', parameters('connections_twitter_3_name'))]"
+            ],
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_a_new_tweet_is_posted": {
+                            "recurrence": {
+                                "frequency": "Day",
+                                "interval": 1
+                            },
+                            "splitOn": "@triggerBody()?['value']",
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['twitter_1']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/onnewtweet",
+                                "queries": {
+                                    "searchQuery": "from:@sapxproject1"
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "For_each": {
+                            "foreach": "@body('Search_tweets')",
+                            "actions": {
+                                "Detect_Sentiment_(V2)": {
+                                    "runAfter": {},
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "body": {
+                                            "documents": [
+                                                {
+                                                    "id": "@items('For_each')?['TweetId']",
+                                                    "language": "@items('For_each')?['TweetLanguageCode']",
+                                                    "text": "@items('For_each')['TweetText']"
+                                                }
+                                            ]
+                                        },
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['cognitiveservicestextanalytics_1']['connectionId']"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "path": "/v2/text/analytics/v2.1/sentiment"
+                                    }
+                                },
+                                "For_each_2": {
+                                    "foreach": "@body('Detect_Sentiment_(V2)')?['documents']",
+                                    "actions": {
+                                        "Condition": {
+                                            "actions": {
+                                                "For_each_3": {
+                                                    "foreach": "@body('List_records')?['value']",
+                                                    "actions": {
+                                                        "Create_a_new_record": {
+                                                            "runAfter": {},
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "body": {
+                                                                    "_ownerid_type": "systemusers",
+                                                                    "_ownerid_value": "75b51416-2954-ea11-a815-000d3ab958d9",
+                                                                    "_regardingobjectid_type": "contacts",
+                                                                    "_regardingobjectid_value": "@items('For_each_3')?['contactid']",
+                                                                    "description": "@items('For_each')['TweetText']",
+                                                                    "isbilled": false,
+                                                                    "isregularactivity": false,
+                                                                    "isworkflowcreated": false,
+                                                                    "prioritycode": 2,
+                                                                    "subject": "Very bad social Sentiment detected: @{triggerBody()?['UserDetails']?['FullName']}"
+                                                                },
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "name": "@parameters('$connections')['commondataservice_1']['connectionId']"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('crm039456.crm4'))}/tables/@{encodeURIComponent(encodeURIComponent('tasks'))}/items"
+                                                            }
+                                                        },
+                                                        "Post_a_message_(V3)": {
+                                                            "runAfter": {
+                                                                "Create_a_new_record": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            },
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "body": {
+                                                                    "body": {
+                                                                        "content": "<p>Hey Jeff,<br>\n<br>\nwas ist denn mit deinem Account los? Twitter meldet folgendes:<br>\n<br>\n<b>@{items('For_each')['TweetedBy']}</b>:<br>\n<i>@{items('For_each')['TweetText']}</i><br>\n<br>\nWir haben schon mal einen Task für dich erstellt. Hier geht's <a href=\"https://crm039456.crm4.dynamics.com/main.aspx?appid=2ce14366-cc4f-ea11-a815-000d3ab958d9&amp;pagetype=entityrecord&amp;etn=task&amp;id=@{body('Create_a_new_record')?['activityid']}\">lang.</a><br>\n</p>",
+                                                                        "contentType": "html"
+                                                                    }
+                                                                },
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "name": "@parameters('$connections')['teams']['connectionId']"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "path": "/v3/beta/teams/@{encodeURIComponent('d699ae0a-39e2-41d1-89ff-535c94e117d1')}/channels/@{encodeURIComponent('19:41178a19b619481b940d8e3c2ed5d692@thread.tacv2')}/messages"
+                                                            }
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "List_records": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "type": "Foreach"
+                                                },
+                                                "List_records": {
+                                                    "runAfter": {},
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "name": "@parameters('$connections')['commondataservice_1']['connectionId']"
+                                                            }
+                                                        },
+                                                        "method": "get",
+                                                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('crm039456.crm4'))}/tables/@{encodeURIComponent(encodeURIComponent('contacts'))}/items",
+                                                        "queries": {
+                                                            "$filter": "msdyusd_twitter eq '1230128973738369000'"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Insert_or_Merge_Entity": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "expression": {
+                                                "and": [
+                                                    {
+                                                        "less": [
+                                                            "@items('For_each_2')?['score']",
+                                                            0.3
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "type": "If"
+                                        },
+                                        "Insert_or_Merge_Entity": {
+                                            "runAfter": {},
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "createdAt": "@items('For_each')?['CreatedAtIso']",
+                                                    "score": "@items('For_each_2')?['score']",
+                                                    "text": "@items('For_each')['TweetText']"
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['azuretables_1']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "patch",
+                                                "path": "[concat('/Tables/@{encodeURIComponent(''', parameters('workflows_TwitterSentiment_name'), ''')}/entities(PartitionKey=''@{encodeURIComponent(items(''For_each'')?[''TweetId''])}'',RowKey=''@{encodeURIComponent(if(contains(toLower(items(''For_each'')[''TweetText'']),''contoso''),''CA'',''DA''))}'')')]"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Detect_Sentiment_(V2)": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "Foreach"
+                                }
+                            },
+                            "runAfter": {
+                                "Search_tweets": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "Search_tweets": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['twitter_1']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/searchtweets",
+                                "queries": {
+                                    "maxResults": 20,
+                                    "searchQuery": "from:@sapxproject1"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "azuretables_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_azuretables_1_name'))]",
+                                "connectionName": "azuretables-1",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/azuretables"
+                            },
+                            "cognitiveservicestextanalytics_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_cognitiveservicestextanalytics_1_name'))]",
+                                "connectionName": "cognitiveservicestextanalytics-1",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/cognitiveservicestextanalytics"
+                            },
+                            "commondataservice_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_commondataservice_1_name'))]",
+                                "connectionName": "commondataservice-1",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/commondataservice"
+                            },
+                            "teams": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_teams_name'))]",
+                                "connectionName": "teams",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/teams"
+                            },
+                            "twitter_1": {
+                                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('connections_twitter_3_name'))]",
+                                "connectionName": "twitter-3",
+                                "id": "/subscriptions/<<<Your Subscription Id>>>/providers/Microsoft.Web/locations/westeurope/managedApis/twitter"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apis_getdatastorageaccount_path": {
+            "value": null
+        },
+        "subscriptions_5e01fdadc2dc55009a070001_displayName": {
+            "value": null
+        },
+        "subscriptions_5e01fdadc2dc55009a070002_displayName": {
+            "value": null
+        },
+        "users_1_lastName": {
+            "value": null
+        },
+        "sites_sapxapp_name": {
+            "value": null
+        },
+        "connections_teams_name": {
+            "value": null
+        },
+        "connections_keyvault_name": {
+            "value": null
+        },
+        "connections_twitter_3_name": {
+            "value": null
+        },
+        "workflows_GetDataES5_name": {
+            "value": null
+        },
+        "connections_azuretables_1_name": {
+            "value": null
+        },
+        "vaults_project_secrets_name": {
+            "value": null
+        },
+        "service_auth_proxy_name": {
+            "value": null
+        },
+        "workflows_CreateDyn365Task_name": {
+            "value": null
+        },
+        "workflows_TwitterSentiment_name": {
+            "value": null
+        },
+        "storageAccounts_sapstoresa_name": {
+            "value": null
+        },
+        "connections_commondataservice_1_name": {
+            "value": null
+        },
+        "connections_dynamicscrmonline_1_name": {
+            "value": null
+        },
+        "accounts_Flight_CS_name": {
+            "value": null
+        },
+        "registries_sapxacr_name": {
+            "value": null
+        },
+        "serverfarms_ASP_sapprojectx_89f8_name": {
+            "value": null
+        },
+        "workflows_GetDataStorageAccount_name": {
+            "value": null
+        },
+        "connections_cognitiveservicestextanalytics_1_name": {
+            "value": null
+        },
+        "connections_azuretables_externalid": {
+            "value": null
+        }
+    }
+}
