@@ -7,6 +7,13 @@ Visualization of Flight Sample data from public SAP ERP ES5 enriched with Sentim
 
 Find more details on my blog post: https://blogs.sap.com/2020/03/04/your-sap-data-becomes-sentimental/
 
-ARM templates will follow soon.
+## Installation and Configuration
+
+I provided ARM templates from an export of my demo landscape, so you can spin up your own version of it. Path: /templates. On Azure simply navigate to "Deploy a custom template" > "Build your onw tempalte in the editor" and upload it.
+
+However there are some pitfalls. Some components are dependent on your tenant and this is reflected in my export. To overcome that I put placeholders in the template "<<< some text >>>" so you can identify the relevant sections quickly.
+On top of that you need to check the naming of the components, because some of them need to be unique. I left my instances for easier spotting. You need to alter them to avoid conflict.
+
+Bottom line: there are some manual steps to actually import this. During the next iteration I will try to make this a smoother process. Until then the most important thing on the ARM template is the config of the LogicApp, as it contains the heavy lifting of all the integration. The rest could be quickly created from scratch.
 
 Feel free to reach out: martin.pankraz@microsoft.com
