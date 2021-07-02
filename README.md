@@ -16,4 +16,4 @@ On top of that you need to check the naming of the components, because some of t
 
 Bottom line: there are some manual steps to actually import this. During the next iteration I will try to make this a smoother process. Until then the most important thing on the ARM template is the config of the LogicApp, as it contains the heavy lifting of all the integration. The rest could be quickly created from scratch.
 
-Feel free to reach out: martin.pankraz@microsoft.com
+Feel free to reach out via the [GitHub Issues tab](https://github.com/MartinPankraz/SAP-X-Fiori/issues)
